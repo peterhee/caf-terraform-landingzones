@@ -23,7 +23,7 @@ terraform {
       version = "~> 1.2.0"
     }
   }
-  required_version = ">= 0.15"
+  required_version = ">= 1.3.5"
 }
 
 provider "azuread" {
@@ -35,7 +35,7 @@ provider "azurerm" {
   # partner identifier for CAF Terraform landing zones.
   features {
     api_management {
-      purge_soft_delete_on_destroy         = var.provider_azurerm_features_api_management.purge_soft_delete_on_destroy
+      purge_soft_delete_on_destroy = try(var.provider_azurerm_features_api_management.purge_soft_delete_on_destroy, null)
       # recover_soft_deleted_api_managements = var.provider_azurerm_features_api_management.recover_soft_deleted_api_managements
     }
     # application_insights {
@@ -45,12 +45,12 @@ provider "azurerm" {
       purge_soft_delete_on_destroy = var.provider_azurerm_features_cognitive_account.purge_soft_delete_on_destroy
     }
     key_vault {
-      purge_soft_delete_on_destroy = var.provider_azurerm_features_keyvault.purge_soft_delete_on_destroy
+      purge_soft_delete_on_destroy = try(var.provider_azurerm_features_keyvault.purge_soft_delete_on_destroy, false)
       # purge_soft_deleted_certificates_on_destroy = var.provider_azurerm_features_keyvault.purge_soft_deleted_certificates_on_destroy
       # purge_soft_deleted_keys_on_destroy         = var.provider_azurerm_features_keyvault.purge_soft_deleted_keys_on_destroy
       # purge_soft_deleted_secrets_on_destroy      = var.provider_azurerm_features_keyvault.purge_soft_deleted_secrets_on_destroy
       # recover_soft_deleted_certificates          = var.provider_azurerm_features_keyvault.recover_soft_deleted_certificates
-      # recover_soft_deleted_key_vaults            = var.provider_azurerm_features_keyvault.recover_soft_deleted_key_vaults
+      recover_soft_deleted_key_vaults = try(var.provider_azurerm_features_keyvault.recover_soft_deleted_key_vaults, true)
       # recover_soft_deleted_keys                  = var.provider_azurerm_features_keyvault.recover_soft_deleted_keys
       # recover_soft_deleted_secrets               = var.provider_azurerm_features_keyvault.recover_soft_deleted_secrets
     }
@@ -93,11 +93,11 @@ locals {
   tfstates = merge(
     tomap(
       {
-        (var.landingzone.key) = local.backend[var.landingzone.backend_type]
+        (try(var.landingzone.key, var.landingzone[var.backend_type].key)) = local.backend[try(var.landingzone.backend_type, var.backend_type)]
       }
     )
     ,
-    data.terraform_remote_state.remote[var.landingzone.global_settings_key].outputs.tfstates
+    try(data.terraform_remote_state.remote[var.landingzone.global_settings_key].outputs.tfstates, {})
   )
 
 
@@ -107,13 +107,13 @@ locals {
       container_name       = var.tfstate_container_name
       resource_group_name  = var.tfstate_resource_group_name
       key                  = var.tfstate_key
-      level                = var.landingzone.level
+      level                = try(var.landingzone.level, var.landingzone[var.backend_type].level)
       tenant_id            = var.tenant_id
       subscription_id      = data.azurerm_client_config.current.subscription_id
     }
     remote = {
-      hostname     = try(var.tfstate_hostname, "app.terraform.io")
-      organization = var.tfstate_organization
+      hostname     = var.tf_cloud_hostname
+      organization = var.tf_cloud_organization
       workspaces = {
         name = var.workspace
       }

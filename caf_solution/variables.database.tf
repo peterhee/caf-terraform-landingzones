@@ -1,6 +1,10 @@
 variable "app_config" {
   default = {}
 }
+variable "app_config_entries" {
+  description = "Map of objects describing kv entries to an app config."
+  default     = {}
+}
 variable "azurerm_redis_caches" {
   default = {}
 }
@@ -71,6 +75,9 @@ variable "mysql_databases" {
 variable "mysql_servers" {
   default = {}
 }
+variable "mysql_flexible_server" {
+  default = {}
+}
 variable "postgresql_flexible_servers" {
   default = {}
 }
@@ -78,5 +85,46 @@ variable "postgresql_servers" {
   default = {}
 }
 variable "synapse_workspaces" {
+  default = {}
+}
+variable "cosmosdb_role_definitions" {
+  default = {}
+}
+variable "cosmosdb_role_mapping" {
+  default = {}
+}
+variable "database_migration_services" {
+  default = {}
+}
+variable "database_migration_projects" {
+  default = {}
+}
+
+## Data explorer
+variable "kusto_attached_database_configurations" {
+  default = {}
+}
+variable "kusto_cluster_customer_managed_keys" {
+  default = {}
+}
+variable "kusto_cluster_principal_assignments" {
+  default = {}
+}
+variable "kusto_clusters" {
+  default = {}
+}
+variable "kusto_database_principal_assignments" {
+  default = {}
+}
+variable "kusto_databases" {
+  default = {}
+}
+variable "kusto_eventgrid_data_connections" {
+  default = {}
+}
+variable "kusto_eventhub_data_connections" {
+  default = {}
+}
+variable "kusto_iothub_data_connections" {
   default = {}
 }

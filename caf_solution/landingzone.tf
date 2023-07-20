@@ -1,23 +1,21 @@
 module "solution" {
-  # source  = "aztfmod/caf/azurerm"
-  # version = "5.5.5"
-
-  # during dev cycles for the module, you can pick dev branches from GitHub, or from a local fork
-  source = "git::https://github.com/aztfmod/terraform-azurerm-caf.git?ref=main"
-  # source = "../../aztfmod"
+  source  = "aztfmod/caf/azurerm"
+  version = "5.6.10"
 
   providers = {
     azurerm.vhub = azurerm.vhub
   }
 
+  aadb2c                                = var.aadb2c
+  apim                                  = local.apim
   azuread                               = local.azuread
   cloud                                 = local.cloud
-  compute                               = local.compute
-  apim                                  = local.apim
   cognitive_services                    = local.cognitive_services
-  current_landingzone_key               = var.landingzone.key
+  compute                               = local.compute
+  current_landingzone_key               = try(var.landingzone.key, var.landingzone[var.backend_type].key)
   custom_role_definitions               = var.custom_role_definitions
   data_factory                          = local.data_factory
+  data_protection                       = local.data_protection
   database                              = local.database
   diagnostic_storage_accounts           = var.diagnostic_storage_accounts
   diagnostics_definition                = var.diagnostics_definition
@@ -29,6 +27,7 @@ module "solution" {
   event_hubs                            = var.event_hubs
   global_settings                       = local.global_settings
   identity                              = local.identity
+  iot                                   = local.iot
   keyvault_access_policies              = var.keyvault_access_policies
   keyvault_access_policies_azuread_apps = var.keyvault_access_policies_azuread_apps
   keyvault_certificate_issuers          = var.keyvault_certificate_issuers
@@ -40,6 +39,7 @@ module "solution" {
   managed_identities                    = var.managed_identities
   messaging                             = local.messaging
   networking                            = local.networking
+  purview                               = local.purview
   random_strings                        = var.random_strings
   remote_objects                        = local.remote
   resource_groups                       = var.resource_groups
@@ -54,6 +54,7 @@ module "solution" {
   tenant_id                             = var.tenant_id
   tfstates                              = var.tfstates
   user_type                             = var.user_type
+  var_folder_path                       = var.var_folder_path
   webapp                                = local.webapp
 
   diagnostics = {
